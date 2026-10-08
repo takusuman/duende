@@ -40,10 +40,11 @@ installed:
 Then I went and hacked the ``ldconfig``(8) script, originally made by Samuel
 Holland (@smaeul), to not depend exclusively on ``scanelf`` anymore, though it
 now depended on GNU Binutils' ``objdump``(1) from ``/usr/ccs/bin``, which is far
-from optimal on a production environment. I've initially theorized about the
-possibility of using ``dd``(1) for reading the binary and then, by some way,
-work with the data; of course, it didn't seem to work, it just printed
-apparently meaningless symbols and I wasn't thinking much on making it depend on
+from optimal on a production environment.  
+I've initially theorized about the possibility of using ``dd``(1) for reading
+the binary and then, by some way, work with the data; of course, it didn't seem
+to work, it just printed apparently meaningless symbols and I wasn't thinking
+much on making it depend on
 [``hd``(1XNX)](https://heirloom-ng.pindorama.net.br/manual/man1/hd.1.html),
 until I've researched a little bit more and actually learnt about ``od``(1)'s
 capacibilities, which resulted in this. [It can even seek on the
@@ -72,6 +73,22 @@ since we're not buffering anything. There's room for improvement in these
 aspects.  
 But, in general, it will be slower, and it's fine for the purposes of being used
 pontually.
+
+## Could this, as a concept, be ported to Korn Shell 93?
+
+Sure, why not?  
+It'd be even better because we've got compound variables and associative arrays
+there, along with some features that could drop the use of any external program
+entirely.  
+In fact, we can read the entire struct at once with a function that calculates
+the offsets correctly for
+[``read -N``](https://www.mankier.com/1/ksh93#Description-Built-in_Commands.)
+based on the size of the previous entries.  
+It'd work quite nicely, but it's just an idea for now.
+
+### That's it! I'm going to read and write MP4 containers with pure ksh93 and recreate ffmpeg!
+
+Please, don't.
 
 ## Who can I blame for it?
 

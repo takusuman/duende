@@ -33,7 +33,9 @@ to discover that, as to be expected from a half-backed compilation (a.k.a.
 "Developer Release"), it didn't work properly because ``scanelf`` wasn't
 installed:
 
-https://twitter.com/the_takusuman/status/2106625460327383545 
+<a href="https://twitter.com/the_takusuman/status/2106625460327383545">
+<img width="420" height="545" alt="output"
+  src="https://github.com/user-attachments/assets/8b4b99c3-5895-454f-951e-2c8cf36d8b98"/></a>
 
 Then I went and hacked the ``ldconfig``(8) script, originally made by Samuel
 Holland (@smaeul), to not depend exclusively on ``scanelf`` anymore, though it

@@ -4,7 +4,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-./EMconsts.shi
+. ./EMconsts.shi
 
 # This clears a number output per od(1).
 cleanUBase10() {
@@ -29,6 +29,7 @@ cleanUBase10() {
 # This reads and parses some information from an ELF header. 
 parse_Elfhdr() {
 	lib="$1"
+	e_indent="$(od -An -t c -N16 "$lib")"
 	# We could just use file(1), but, since
 	# the ELF header already has an entry
 	# for the archicture, it'd be better to
@@ -38,11 +39,6 @@ parse_Elfhdr() {
 		$EM_386) echo 'i386' ;;
 		$EM_X86_64) echo 'x86_64' ;;
 	esac
-	# case "$(file "$lib")" in
-	#	*"ELF 32-bit"*"lib"*) echo 32-bit file ;;
-	#	*"ELF 64-bit"*"lib"*) echo 64-bit file ;;
-	#	*) echo Not an ELF library. ;;
-	# esac
 
 }
 

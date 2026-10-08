@@ -61,19 +61,43 @@ cleanUBase10() {
 # Elf32_Section: 2
 # Elf64_Section: 2
 # Elf32_Versym: 2
-# Elf64_Versym: 2 
+# Elf64_Versym: 2
 parse_Elfhdr() {
 	lib="$1"
 	e_indent="$(od -An -t c -N16 "$lib")"
-	e_type="$(od -An -t u2 -j16 -N2 "$lib")"
+	e_type="$(cleanUBase10 $(od -An -t u2 -j16 -N2 "$lib"))"
 	# We could just use file(1), but, since
 	# the ELF header already has an entry
 	# for the archicture, it'd be better to
 	# parse it straight away.
-	e_machine="$(od -An -t u2 -j$((16 + 2)) -N 2 "$lib")"
-	case "$(cleanUBase10 $e_machine)" in
-		$EM_386) echo 'i386' ;;
-		$EM_X86_64|$EM_AARCH64) echo 'x86_64' ;;
+	e_machine="$(cleanUBase10 $(od -An -t u2 -j$((16 + 2)) -N 2 "$lib"))"
+	e_version="$(cleanUBase10 $(od -An -t u2 -j$((16 + 2 + 2)) -N 4 "$lib"))"
+	case "$e_machine" in
+		$EM_386|$EM_ARM)
+		# 20 + 20 + 20 + 7
+		e_entry="$(cleanUBase10 $(od -An -t u4 -j$((16 + 2 + 2 + 4)) -N 4 "$lib"))"
+		e_phoff="$(cleanUBase10 $(od -An -t u4 -j$((16 + 2 + 2 + 4 + 4)) -N 4 "$lib"))"
+		e_shoff="$(cleanUBase10 $(od -An -t u4 -j$((16 + 2 + 2 + 4 + 4 + 4)) -N 4 "$lib"))"
+		e_flags="$(cleanUBase10 $(od -An -t u4 -j$((16 + 2 + 2 + 4 + 4 + 4 + 4)) -N 4 "$lib"))"
+		e_ehsize="$(cleanUBase10 $(od -An -t u2 -j$((16 + 2 + 2 + 4 + 4 + 4 + 4 + 4)) -N 2 "$lib"))"
+		e_phentsize="$(cleanUBase10 $(od -An -t u2 -j$((16 + 2 + 2 + 4 + 4 + 4 + 4 + 4 + 2)) -N 2 "$lib"))"
+		e_phnum="$(cleanUBase10 $(od -An -t u2 -j$((16 + 2 + 2 + 4 + 4 + 4 + 4 + 4 + 2 + 2)) -N 2 "$lib"))"
+		e_shentsize="$(cleanUBase10 $(od -An -t u2 -j$((16 + 2 + 2 + 4 + 4 + 4 + 4 + 4 + 2 + 2 + 2)) -N 2 "$lib"))"
+		e_shnum="$(cleanUBase10 $(od -An -t u2 -j$((16 + 2 + 2 + 4 + 4 + 4 + 4 + 4 + 2 + 2 + 2 + 2)) -N 2 "$lib"))"
+		e_shstrndx="$(cleanUBase10 $(od -An -t u2 -j$((16 + 2 + 2 + 4 + 4 + 4 + 4 + 4 + 2 + 2 + 2 + 2 + 2)) -N 2 "$lib"))"
+		;;
+		$EM_X86_64|$EM_AARCH64)
+		e_entry="$(cleanUBase10 $(od -An -t u8 -j$((16 + 2 + 2 + 4)) -N 8 "$lib"))"
+		e_phoff="$(cleanUBase10 $(od -An -t u8 -j$((16 + 2 + 2 + 4 + 8)) -N 8 "$lib"))"
+		e_shoff="$(cleanUBase10 $(od -An -t u8 -j$((16 + 2 + 2 + 4 + 8 + 8)) -N 8 "$lib"))"
+		e_flags="$(cleanUBase10 $(od -An -t u4 -j$((16 + 2 + 2 + 4 + 8 + 8 + 8)) -N 4 "$lib"))"
+		e_ehsize="$(cleanUBase10 $(od -An -t u2 -j$((16 + 2 + 2 + 4 + 8 + 8 + 8 + 4)) -N 2 "$lib"))"
+		e_phentsize="$(cleanUBase10 $(od -An -t u2 -j$((16 + 2 + 2 + 4 + 8 + 8 + 8 + 4 + 2)) -N 2 "$lib"))"
+		e_phnum="$(cleanUBase10 $(od -An -t u2 -j$((16 + 2 + 2 + 4 + 8 + 8 + 8 + 4 + 2 + 2)) -N 2 "$lib"))"
+		e_shentsize="$(cleanUBase10 $(od -An -t u2 -j$((16 + 2 + 2 + 4 + 8 + 8 + 8 + 4 + 2 + 2 + 2)) -N 2 "$lib"))"
+		e_shnum="$(cleanUBase10 $(od -An -t u2 -j$((16 + 2 + 2 + 4 + 8 + 8 + 8 + 4 + 2 + 2 + 2 + 2)) -N 2 "$lib"))"
+		e_shstrndx="$(cleanUBase10 $(od -An -t u2 -j$((16 + 2 + 2 + 4 + 8 + 8 + 8 + 4 + 2 + 2 + 2 + 2 + 2)) -N 2 "$lib"))"
+		;;
 	esac
 }
 

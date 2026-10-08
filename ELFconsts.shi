@@ -1,9 +1,11 @@
-# EMconsts.shi - EM_* constants for Elf{32,64}_Ehdr.e_machine
+# vim: set filetype=sh :
+# ELFconsts.shi - Constants for Elf{32,64}_Ehdr.e_machine
 #
-# Derived from musl libc 1.2.1's /usr/include/elf.h e_machine constants.
+# Derived from musl libc 1.2.1's /usr/include/elf.h constants.
 #
 # SPDX-License-Identifier: MIT
 
+# e_machine consts
 EM_NONE=0
 EM_M32=1
 EM_SPARC=2
@@ -183,3 +185,15 @@ EM_BPF=247
 EM_CSKY=252
 EM_NUM=253
 EM_ALPHA=$((0x9026))
+
+# e_type consts
+ET_NONE=0
+ET_REL=1
+ET_EXEC=2
+ET_DYN=3
+ET_CORE=4
+ET_NUM=5
+ET_LOOS=$((0xfe00))
+ET_HIOS=$((0xfeff))
+ET_LOPROC=$((0xff00))
+ET_HIPROC=$((0xffff))

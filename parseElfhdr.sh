@@ -13,7 +13,7 @@ cleanUBase10() {
 	n_imp="${n_ent## }"
 	n1="1$n_imp"
 	n2="2$n_imp"
-	unset n_ent n-imp
+	unset n_ent n_imp
 	# The idea was from Greg's Wiki, but
 	# the principle is quite simple:
 	# first, you make your 10^d + n and

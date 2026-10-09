@@ -69,7 +69,7 @@ parse_Elfhdr() {
 	# for the archicture, it'd be better to
 	# parse it straight away.
 	e_machine="$(cleanUBase10 $(od -An -t u2 -j$((16 + 2)) -N 2 "$lib"))"
-	e_version="$(cleanUBase10 $(od -An -t u2 -j$((16 + 2*2)) -N 4 "$lib"))"
+	e_version="$(cleanUBase10 $(od -An -t u4 -j$((16 + 2*2)) -N 4 "$lib"))"
 	case "$e_machine" in
 		$EM_386|$EM_ARM)
 		# 20 + 20 + 20 + 7

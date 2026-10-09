@@ -90,6 +90,15 @@ It'd work quite nicely, but it's just an idea for now.
 
 Please, don't.
 
+## Any other problems?
+
+Endianess. I'm not thinking a lot about how to manage it for now.  
+For the new(ish) ``ldconfig``(8) for Copacabana (and hopefully more systems), it
+shall not be a problem since the libraries and the system will have the same
+endianess --- although it also supports running on another ``$ROOT``, which,
+well, will be a problem later. Again, it's just a concept before applying in
+practice.
+
 ## Who can I blame for it?
 
 I, who speak to you, Luiz Antônio (a.k.a. takusuman).

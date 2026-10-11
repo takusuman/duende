@@ -97,6 +97,45 @@ parse_Elfhdr() {
 		e_shstrndx="$(cleanUBase10 $(od -An -t u2 -j$((16 + 2*2 + 4 + 3*8 + 4 + 5*2)) -N2 "$lib"))"
 		;;
 	esac
+	export e_shoff e_shnum e_shentsize
+}
+
+# typedef struct {
+#  Elf{32,64}_Word	sh_name;
+#  Elf{32,64}_Word	sh_type;
+#  Elf32_Word|Elf64_Xword	sh_flags;
+#  Elf{32,64}_Addr	sh_addr;
+#  Elf{32,64}_Off	sh_offset;
+#  Elf32_Word|Elf64_Xword	sh_size;
+#  Elf{32,64}_Word	sh_link;
+#  Elf{32,64}_Word	sh_info;
+#  Elf32_Word|Elf64_Xword	sh_addralign;
+#  Elf32_Word|Elf64_Xword	sh_entsize;
+# } Elf{32,64}_Shdr;
+getSONAME() {
+	n=0
+	pos=$e_shoff
+	while [ $n -lt $e_shnum ]; do
+		n=$(( n + 1 ))
+		sh_name=$(cleanUBase10 $(od -An -t u4 -j$pos -N4 "$lib"))
+		sh_type=$(cleanUBase10 $(od -An -t u4 -j$((pos + 4)) -N4 "$lib"))
+		sh_flags=$(cleanUBase10 $(od -An -t u4 -j$((pos + 2*4)) -N4 "$lib"))
+		sh_addr=$(cleanUBase10 $(od -An -t u4 -j$((pos + 3*4)) -N4 "$lib"))
+		sh_offset=$(cleanUBase10 $(od -An -t u4 -j$((pos + 4*4)) -N4 "$lib"))
+		sh_size=$(cleanUBase10 $(od -An -t u4 -j$((pos + 5*4)) -N4 "$lib"))
+		sh_info=$(cleanUBase10 $(od -An -t u4 -j$((pos + 6*4)) -N4 "$lib"))
+		sh_addralign=$(cleanUBase10 $(od -An -t u4 -j$((pos + 7*4)) -N4 "$lib"))
+		sh_entsize=$(cleanUBase10 $(od -An -t u4 -j$((pos + 8*4)) -N4 "$lib"))
+		case $sh_type in
+			$SHT_DYNAMIC) echo BINGO!
+				break ;;
+			*) ;;
+		esac
+		pos=$((pos + e_shentsize))
+	done
+	echo $e_shoff $e_shnum $e_shentsize
+
 }
 
 parse_Elfhdr "$@"
+getSONAME

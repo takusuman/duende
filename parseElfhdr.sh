@@ -8,19 +8,8 @@
 
 # This clears a number output per od(1).
 cleanUBase10() {
-	n_imp="$1"
-	n1="1$n_imp"
-	n2="2$n_imp"
-	unset n_imp
-	# The idea was from Greg's Wiki, but
-	# the principle is quite simple:
-	# first, you make your 10^d + n and
-	# 2(10^d) + n and, then, you take
-	# the difference amid 2*(10^d + n) and
-	# 2(10^d) + n, which will be the n
-	# value. This method works solely with
-	# unsigned integers.
-	n=$(( 2*n1 - n2 ))
+	n_imp=$1
+	n=$(( n_imp ))
 	echo $((n))
 }
 

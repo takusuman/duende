@@ -65,14 +65,37 @@ We're not actually doing it, we're managing to do it. There's a difference,
 y'know.  
 It could be worse, it could be pure Bourne shell.
 
+### No, I mean, it sucks hard. You didn't even buffer it! It takes seconds to run!
+
+Yes, it could be better (as I will talk about below), but I've didn't do it for
+this P.O.C.  
+It's possible to buffer the bytes in the shell, strictly POSIX or not, safely
+using ``od`` with the octal option once and then ``printf``'ing it back to
+``od`` --- or, more labourously, if you will, reading just the necessary bytes
+before "reconverting" with a helper function using ``IFS`` (though I'm
+preoccupied it might be *slower*) ---, but I haven't done it because it's
+really, really annoying to implement.  
+There are other problems as well, like the obscenous amount of ``case``s for
+checking ``e_machine``, or it depending on specific variables. Perhaps there's a
+mask or something similar to discover if the file is for 64-bit or for 32-bit,
+but I don't know which. At least one of the ``case``s, in the case of the
+``soname-if-you-can`` branch (see below), can be removed without any
+considerable modification at te code.
+
+By the way, the code for getting SONAME is at the
+[``soname-if-you-can``](https://github.com/takusuman/duende/tree/soname-if-you-can),
+and it's as messy as this.  
+Of course, for Copacabana's ``ldconfig``(8), I aim to implement it
+with as many of these improvements as possible.
+
 ## How's the speed?
 
 Obviously slower than using Binutils' ``objdump``, PaX Utils' ``scanelf`` or
-anything like, and most certainly it also has more disk accesses in comparison
-since we're not buffering anything. There's room for improvement in these
-aspects.  
-But, in general, it will be slower, and it's fine for the purposes of being used
-pontually.
+anything similar, and most certainly it also has more disk accesses in
+comparison since we're not buffering anything. There's room for improvement in
+these aspects.  
+But, in general, it will be quite slower, and it's fine for the purposes of
+being used pontually and reading *far* fewer values.
 
 ## Could this, as a concept, be ported to Korn Shell 93?
 
@@ -109,4 +132,7 @@ This code is under the MIT license, use it as you will.
 In fact, if you've learnt it from here and made a clean-room implementation,
 I've just would like a citation. :^)  
 For Copacabana's ``ldconfig``(8) script, maybe I will just fork Holland's work
-and relicence it under MIT for it to match this (or the reverse).
+and relicence it under MIT for it to match this (or the reverse), since it's
+already at the
+[``Projeto-Pindorama/musl-extra``](https://github.com/Projeto-Pindorama/musl-extra)
+repository.

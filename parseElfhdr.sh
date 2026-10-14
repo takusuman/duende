@@ -128,8 +128,8 @@ getSONAME() {
 			sh_addr=$(cleanUBase10 $(od -An -t u4 -j$((pos + 3*4)) -N4 "$lib"))
 			sh_offset=$(cleanUBase10 $(od -An -t u4 -j$((pos + 4*4)) -N4 "$lib"))
 			sh_size=$(cleanUBase10 $(od -An -t u4 -j$((pos + 5*4)) -N4 "$lib"))
-			sh_link=$(cleanUBase10 $(od -An -t u4 -j$((pos + 7*4)) -N4 "$lib"))
-			sh_info=$(cleanUBase10 $(od -An -t u4 -j$((pos + 6*4)) -N4 "$lib"))
+			sh_link=$(cleanUBase10 $(od -An -t u4 -j$((pos + 6*4)) -N4 "$lib"))
+			sh_info=$(cleanUBase10 $(od -An -t u4 -j$((pos + 7*4)) -N4 "$lib"))
 			sh_addralign=$(cleanUBase10 $(od -An -t u4 -j$((pos + 8*4)) -N4 "$lib"))
 			sh_entsize=$(cleanUBase10 $(od -An -t u4 -j$((pos + 9*4)) -N4 "$lib"))
 			;;
@@ -158,15 +158,23 @@ getSONAME() {
 			while [ $m -lt $((sh_size/sh_entsize)) ]; do
 				# Again, parse the entire struct.
 				dt_tag=$(cleanUBase10 $(od -An -tu4 -j$pos2 -N4 "$lib"))
-				dt_val=$(od -An -tu4 -j$((pos2 + 4)) -N4 "$lib")
+				dt_val=$(cleanUBase10 $(od -An -tu4 -j$((pos2 + 4)) -N4 "$lib"))
 				case $dt_tag in
 					$DT_SONAME)
-						od -An -tc -j$(cleanUBase10 $dt_val) "$lib"
 						break ;;
 				esac
 				pos2=$((pos2 + sh_entsize))
 				m=$((m + 1))
 			done
+			# taks note: sh_link, in the context of SHT_DYNAMIC, means
+			# that the header remits to a n-th section header table,
+			# and that's why we have it times the sh_entsize plus
+			# the e_shoff.
+			dynstr_sh_pos=$((e_shoff + (sh_link * e_shentsize)))
+			dynstr_sh_offset=$(cleanUBase10 $(od -An -tu4 -j$((dynstr_sh_pos + 4*4)) -N4 "$lib"))
+			SONAME_pos=$((dynstr_sh_offset + dt_val))
+			SONAME="$(od -An -tc -j$SONAME_pos -N256 "$lib" | sed 's/ //g')"
+			echo ${SONAME%%'\0'*}
 			break ;;
 			*) ;;
 		esac

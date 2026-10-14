@@ -8,9 +8,8 @@
 
 # This clears a number output per od(1).
 cleanUBase10() {
-	n_imp=$1
-	n=$(( n_imp ))
-	echo $((n))
+	n_imp=$(echo $1 | sed 's/^0*//g')
+	echo $(( n_imp ))
 }
 
 # This reads and parses some information from an ELF header.
@@ -72,7 +71,7 @@ parse_Elfhdr() {
 			e_shentsize=$(cleanUBase10 $(od -An -t u2 -j$((16 + 2*2 + 5*4 + 3*2)) -N2 "$lib"))
 			e_shnum=$(cleanUBase10 $(od -An -t u2 -j$((16 + 2*2 + 5*4 + 4*2)) -N2 "$lib"))
 			e_shstrndx=$(cleanUBase10 $(od -An -t u2 -j$((16 + 2*2 + 5*4 + 5*2)) -N2 "$lib"))
-		;;
+			;;
 		$EM_X86_64|$EM_AARCH64)
 			e_entry=$(cleanUBase10 $(od -An -t u8 -j$((16 + 2*2 + 4)) -N8 "$lib"))
 			e_phoff=$(cleanUBase10 $(od -An -t u8 -j$((16 + 2*2 + 4 + 8)) -N8 "$lib"))
@@ -84,7 +83,10 @@ parse_Elfhdr() {
 			e_shentsize=$(cleanUBase10 $(od -An -t u2 -j$((16 + 2*2 + 4 + 3*8 + 4 + 3*2)) -N2 "$lib"))
 			e_shnum=$(cleanUBase10 $(od -An -t u2 -j$((16 + 2*2 + 4 + 3*8 + 4 + 4*2)) -N2 "$lib"))
 			e_shstrndx=$(cleanUBase10 $(od -An -t u2 -j$((16 + 2*2 + 4 + 3*8 + 4 + 5*2)) -N2 "$lib"))
-		;;
+			;;
+		*) echo 1>&2 "Architecture $e_machine not listed for now."
+			exit
+			;;
 	esac
 	export e_machine e_shoff e_shnum e_shentsize
 }
